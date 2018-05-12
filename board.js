@@ -8,11 +8,15 @@ winner = "null";
 //   return this;
 // };
 
+exports.reset = () => {
+  board = [".", ".", ".", ".", ".", ".", ".", ".", "."];
+};
 exports.display = cb => {
-  var output = "";
+  var output = "\n";
 
   for (c = 0; c < board.length; c++) {
     output += board[c];
+    output += "  ";
     if ((c + 1) % 3 == 0) output += "\n";
   }
   cb(output);
@@ -32,7 +36,7 @@ exports.move = (player, pos) => {
   } else if (board[pos - 1] != ".") {
     return "invalid move";
   } else {
-    board[pos - 1] = player == "X" ? "X" : "Y";
+    board[pos - 1] = player == "X" ? "X" : "O";
     count++;
     if (hasWon()) {
       winner = player;
@@ -40,7 +44,7 @@ exports.move = (player, pos) => {
     } else if (count >= 9) {
       return "it's a draw";
     } else {
-      return `Player ${player == "X" ? "2(Y)" : "1(X)"}'s turn`;
+      return "";
     }
   }
 };
