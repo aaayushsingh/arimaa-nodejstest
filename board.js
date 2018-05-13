@@ -10,6 +10,8 @@ winner = "null";
 
 exports.reset = () => {
   board = [".", ".", ".", ".", ".", ".", ".", ".", "."];
+  winner = "null";
+  count = 0;
 };
 exports.display = cb => {
   var output = "\n";

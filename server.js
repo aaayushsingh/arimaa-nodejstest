@@ -26,7 +26,7 @@ io.on("connection", function(socket) {
 
   socket.on("move", function(msg) {
     if (won) {
-      socket.emit("msg", "Game Over! Type 'exit' to exit");
+      socket.emit("msg", "Game Over! Type 'r' to exit");
     } else if (socket.id != users[userTurn].id) {
       socket.emit("msg", "wait for your turn");
     } else {
@@ -40,9 +40,14 @@ io.on("connection", function(socket) {
         });
         users[userTurn].emit("msg", "your turn");
       } else {
-        if (moveReturn.includes("won")) {
+        if (moveReturn.includes("won") || moveReturn.includes("draw")) {
           io.emit("msg", moveReturn);
           won = true;
+          users[0].disconnect();
+          users[1].disconnect();
+          userCount = 0;
+          users = [null, null];
+          board.reset();
         } else socket.emit("msg", moveReturn);
       }
     }
@@ -50,16 +55,18 @@ io.on("connection", function(socket) {
   //console.log(`user ${userCount} connected`);
 
   socket.on("disconnect", function() {
-    if (users[0].id == socket.id) {
+    if (users[0].id == socket.id && won != true) {
       io.emit("msg", `user ${1} disconnected, you are now user 1`);
       users[0] = users[1];
       board.reset();
-    } else {
+    } else if (won != true) {
       users[0] = users[1];
       io.emit("msg", `user ${2} disconnected`);
       board.reset();
     }
+
     userCount--;
+    won = false;
   });
 });
 

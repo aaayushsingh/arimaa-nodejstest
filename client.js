@@ -25,7 +25,7 @@ socket.on("msg", function(data) {
 // });
 
 readcommand.loop(function(err, args, str, next) {
-  if (args[0] == "exit") {
+  if (args[0] == "r") {
     process.exit(0);
   }
   if (args[0] <= 9 && args[0] >= 1) {
