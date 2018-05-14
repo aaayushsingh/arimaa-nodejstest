@@ -1,11 +1,19 @@
 const app = require("express")();
 const http = require("http").Server(app);
-let port = 5050;
+
+//http server
+const port = 5050;
+
+http.listen(port, () => {
+  console.log("server started on port: " + port);
+});
 
 // socket
 const io = require("socket.io")(http);
+
 //board
 const board = require("./board");
+
 // global
 let playerCounter = 0;
 let users = [null, null];
@@ -28,15 +36,19 @@ io.on("connection", socket => {
     playerCounter++;
     users[playerCounter - 1] = socket;
     if (playerCounter == 1) {
-      io.emit("conn", `player ${playerCounter} connected... wait for player 2 `);
-    }
-    else {
+      io.emit(
+        "conn",
+        `player ${playerCounter} connected... wait for player 2 `
+      );
+    } else {
       io.emit("conn", `player ${playerCounter} connected.`);
     }
   }
   // start game
   if (playerCounter == 2) {
     io.emit("message", "Start the game -- Player 1's turn");
+    //reset the board and start a new game
+    board.resetBoard();
     board.display(data => {
       io.emit("message", data);
     });
@@ -45,10 +57,8 @@ io.on("connection", socket => {
       player moves
   ======================================================*/
   socket.on("move", message => {
-    if (won) {
-      socket.emit("message", "Game Over! Type 'r' to exit");
-    } else if (socket.id != users[playerTurn].id) {
-      socket.emit("message", "wait for your turn");
+    if (socket.id != users[playerTurn].id) {
+      socket.emit("message", "Wait for the other player to make a move.");
     } else {
       let moveReturn = board.move(
         users[0].id == socket.id ? "X" : "O",
@@ -66,9 +76,6 @@ io.on("connection", socket => {
           won = true;
           users[1].disconnect();
           users[0].disconnect();
-
-          playerCounter = 0;
-          board.resetBoard();
         } else socket.emit("message", moveReturn);
       }
     }
@@ -79,16 +86,10 @@ io.on("connection", socket => {
       io.emit("message", `The other player resigned, you won!`);
       users[1].disconnect();
       users[0].disconnect();
-      board.resetBoard();
     }
-
+    //reset data
     playerCounter = 0;
-
     won = false;
     playerTurn = 0;
   });
-});
-
-http.listen(port, () => {
-  console.log("listening on port:" + port);
 });
