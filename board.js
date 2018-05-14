@@ -1,36 +1,24 @@
-var board = [".", ".", ".", ".", ".", ".", ".", ".", "."];
-var count = 0;
+let board = [".", ".", ".", ".", ".", ".", ".", ".", "."];
+let count = 0;
 winner = "null";
-// var Board = function() {
-//   this.board = [".", ".", ".", ".", ".", ".", ".", ".", "."];
-//   this.count = 0;
-//   this.winner = "null";
-//   return this;
-// };
 
-exports.reset = () => {
+exports.resetBoard = () => {
   board = [".", ".", ".", ".", ".", ".", ".", ".", "."];
   winner = "null";
   count = 0;
 };
-exports.display = cb => {
-  var output = "\n";
+exports.display = callback => {
+  let output = "\n";
 
-  for (c = 0; c < board.length; c++) {
-    output += board[c];
+  for (i = 0; i < board.length; i++) {
+    output += board[i];
     output += "  ";
-    if ((c + 1) % 3 == 0) output += "\n";
+    if ((i + 1) % 3 == 0) output += "\n";
   }
-  cb(output);
+  callback(output);
 };
 
-// 0 1 2
-// 3 4 5
-// 6 7 8
-
 exports.move = (player, pos) => {
-  //   var _this = this;
-  //   var board = _this.board;
   if (winner != "null") {
     return `player ${winner} already won`;
   } else if (count >= 9 && winner == "null") {
@@ -40,38 +28,34 @@ exports.move = (player, pos) => {
   } else {
     board[pos - 1] = player == "X" ? "X" : "O";
     count++;
-    if (hasWon()) {
+    if (userWon()) {
       winner = player;
-      return `player ${player} won`;
+      return `player ${player} won the game`;
     } else if (count >= 9) {
-      return "it's a draw";
+      return "Draw!!! Play again to win..";
     } else {
       return "";
     }
   }
 };
 
-hasWon = () => {
-  //var _this = this;
-  var win = false;
-  var c = board;
+userWon = () => {
   if (
-    (c[0] == c[1] && c[1] == c[2] && c[0] != ".") ||
-    (c[3] == c[4] && c[4] == c[5] && c[3] != ".") ||
-    (c[6] == c[7] && c[7] == c[8] && c[6] != ".")
+    // horizontal
+    ((board[0] == board[1] && board[1] == board[2] && board[0] != ".") ||
+      (board[3] == board[4] && board[4] == board[5] && board[3] != ".") ||
+      (board[6] == board[7] && board[7] == board[8] && board[6] != ".")) ||
+
+    // vertical
+    ((board[0] == board[3] && board[3] == board[6] && board[0] != ".") ||
+      (board[1] == board[4] && board[4] == board[7] && board[1] != ".") ||
+      (board[2] == board[5] && board[5] == board[8] && board[2] != ".")) ||
+
+    // diagonal
+    ((board[0] == board[4] && board[4] == board[8] && board[0] != ".") ||
+      (board[2] == board[4] && board[4] == board[6] && board[2] != "."))
   ) {
-    win = true;
-  } else if (
-    (c[0] == c[3] && c[3] == c[6] && c[0] != ".") ||
-    (c[1] == c[4] && c[4] == c[7] && c[1] != ".") ||
-    (c[2] == c[5] && c[5] == c[8] && c[2] != ".")
-  ) {
-    win = true;
-  } else if (
-    (c[0] == c[4] && c[4] == c[8] && c[0] != ".") ||
-    (c[2] == c[4] && c[4] == c[6] && c[2] != ".")
-  ) {
-    win = true;
+    return true;
   }
-  return win;
+  return false;
 };
