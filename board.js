@@ -6,6 +6,17 @@ resetBoard = () => {
   count = 0;
 };
 
+display = cb => {
+  var output = "\n";
+
+  for (c = 0; c < board.length; c++) {
+    output += board[c];
+    output += "  ";
+    if ((c + 1) % 3 == 0) output += "\n";
+  }
+  cb(output);
+};
+
 move = (player, pos) => {
   if (count >= 9 && winner == "null") {
     return "it's a draw";
@@ -45,5 +56,6 @@ userWon = () => {
 
 module.exports = {
   resetBoard,
-  move
+  move,
+  display
 };
