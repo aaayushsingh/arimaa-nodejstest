@@ -1,18 +1,15 @@
 var board = [".", ".", ".", ".", ".", ".", ".", ".", "."];
 var count = 0;
 winner = "null";
-// var Board = function() {
-//   this.board = [".", ".", ".", ".", ".", ".", ".", ".", "."];
-//   this.count = 0;
-//   this.winner = "null";
-//   return this;
-// };
 
+//resets the board
 exports.reset = () => {
   board = [".", ".", ".", ".", ".", ".", ".", ".", "."];
   winner = "null";
   count = 0;
 };
+
+// prints the current board
 exports.display = cb => {
   var output = "\n";
 
@@ -28,16 +25,19 @@ exports.display = cb => {
 // 3 4 5
 // 6 7 8
 
+// takes 2 arguments, the active player and the position the player wants to move
 exports.move = (player, pos) => {
-  //   var _this = this;
-  //   var board = _this.board;
+  //check if we already have a winner
   if (winner != "null") {
     return `player ${winner} already won`;
-  } else if (count >= 9 && winner == "null") {
+  } // if 9 moves already over, it means it's a draw
+  else if (count >= 9 && winner == "null") {
     return "it's a draw";
-  } else if (board[pos - 1] != ".") {
+  } // if the position that the player is trying to move is already filled, return invalid move
+  else if (board[pos - 1] != ".") {
     return "invalid move";
-  } else {
+  } // else, make the move if everything is good
+  else {
     board[pos - 1] = player == "X" ? "X" : "O";
     count++;
     if (hasWon()) {
@@ -52,26 +52,26 @@ exports.move = (player, pos) => {
 };
 
 hasWon = () => {
-  //var _this = this;
-  var win = false;
+  // check is one of the users won the game after the last move
+  // return true if we have a winner, else return false.
   var c = board;
   if (
     (c[0] == c[1] && c[1] == c[2] && c[0] != ".") ||
     (c[3] == c[4] && c[4] == c[5] && c[3] != ".") ||
     (c[6] == c[7] && c[7] == c[8] && c[6] != ".")
   ) {
-    win = true;
+    return true;
   } else if (
     (c[0] == c[3] && c[3] == c[6] && c[0] != ".") ||
     (c[1] == c[4] && c[4] == c[7] && c[1] != ".") ||
     (c[2] == c[5] && c[5] == c[8] && c[2] != ".")
   ) {
-    win = true;
+    return true;
   } else if (
     (c[0] == c[4] && c[4] == c[8] && c[0] != ".") ||
     (c[2] == c[4] && c[4] == c[6] && c[2] != ".")
   ) {
-    win = true;
+    return true;
   }
-  return win;
+  return false;
 };

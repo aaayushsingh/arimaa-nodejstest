@@ -1,33 +1,36 @@
 var app = require("express");
 var http = require("http").Server(app);
-var socket = require("socket.io-client")(`http://localhost:5050`);
+
+//connect to the server at localhost:5050
+var socket = require("socket.io-client")(
+  `http://${process.argv[2]}:${process.argv[3]}`
+);
+
+//read commands from cli
 var readcommand = require("readcommand");
-var result;
-http.listen(process.argv[3], process.argv[2], function() {
-  console.log(`connected to ${process.argv[2]} : ${process.argv[3]}`);
-});
 
 socket.on("event", function(data) {
   console.log(data);
-  //   socket.emit("hello", "world");
 });
 
+// terminate program on socket disconnection
 socket.on("disconnect", function(data) {
-  //console.log("disconnected");
   process.exit(0);
 });
+
+// display msg event to console
 socket.on("msg", function(data) {
   console.log(data);
 });
-// readcommand.read(function(err, args) {
-//   socket.emit("chat message", "hello");
-//   console.log("Arguments: %s", JSON.stringify(args));
-// });
 
 readcommand.loop(function(err, args, str, next) {
+  // exit client if input is 'r'
   if (args[0] == "r") {
+    console.log("you lost");
     process.exit(0);
   }
+
+  // else check validity of inputs
   if (args[0] <= 9 && args[0] >= 1) {
     //console.log("Received args: %s", JSON.stringify(args));
     socket.emit("move", args[0]);
